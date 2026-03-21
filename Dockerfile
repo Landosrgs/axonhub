@@ -29,6 +29,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 COPY . .
 COPY --from=frontend-dist /dist /build/internal/server/static/dist
 
+RUN GOTOOLCHAIN=auto go generate ./internal/server/gql/...
+
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
     GOOS=linux
