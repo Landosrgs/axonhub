@@ -106,6 +106,15 @@ func (r *channelSettingsResolver) BodyOverrideOperations(ctx context.Context, ob
 	return lo.ToSlicePtr(ops), nil
 }
 
+// RegexFilters is the resolver for the regexFilters field.
+func (r *channelSettingsResolver) RegexFilters(ctx context.Context, obj *objects.ChannelSettings) ([]*objects.RegexFilterRule, error) {
+	if obj == nil || len(obj.RegexFilters) == 0 {
+		return []*objects.RegexFilterRule{}, nil
+	}
+
+	return lo.ToSlicePtr(obj.RegexFilters), nil
+}
+
 // CreateChannel is the resolver for the createChannel field.
 func (r *mutationResolver) CreateChannel(ctx context.Context, input ent.CreateChannelInput) (*ent.Channel, error) {
 	return r.channelService.CreateChannel(ctx, input)

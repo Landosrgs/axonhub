@@ -110,6 +110,15 @@ models:
   CapabilityPolicy:
     model:
       - github.com/looplj/axonhub/internal/objects.CapabilityPolicy
+  RegexFilterMode:
+    model:
+      - github.com/looplj/axonhub/internal/objects.RegexFilterMode
+  RegexFilterRule:
+    model:
+      - github.com/looplj/axonhub/internal/objects.RegexFilterRule
+  RegexFilterRuleInput:
+    model:
+      - github.com/looplj/axonhub/internal/objects.RegexFilterRule
   ChannelPolicies:
     model:
       - github.com/looplj/axonhub/internal/objects.ChannelPolicies

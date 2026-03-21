@@ -100,7 +100,7 @@ type ChannelSettings {
   transformOptions: TransformOptions
   headerOverrideOperations: [OverrideOperation!]! @goField(forceResolver: true)
   bodyOverrideOperations: [OverrideOperation!]! @goField(forceResolver: true)
-  regexFilters: [RegexFilterRule!]
+  regexFilters: [RegexFilterRule!] @goField(forceResolver: true)
 }
 
 enum CapabilityPolicy {
