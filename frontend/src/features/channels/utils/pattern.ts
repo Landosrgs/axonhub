@@ -54,3 +54,47 @@ export function filterModelsByPattern(models: string[], pattern: string): string
   if (!pattern) return [];
   return models.filter((model) => matchesModelPattern(model, pattern));
 }
+
+/**
+ * Returns true when `search` contains regex special characters, indicating
+ * that the user intends it to be treated as a regex expression.
+ */
+export function isRegexSearch(search: string): boolean {
+  return !!search && REGEX_SPECIAL_CHARS_RE.test(search);
+}
+
+/**
+ * Returns true when `search` looks like a regex but is syntactically invalid.
+ */
+export function isInvalidRegexSearch(search: string): boolean {
+  if (!search || !REGEX_SPECIAL_CHARS_RE.test(search)) return false;
+  try {
+    new RegExp(search);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Search-oriented matching that supports both plain-text and regex searches.
+ *
+ * Rules:
+ * 1. If `search` contains no regex special chars → case-insensitive substring match.
+ * 2. If `search` contains regex special chars → treat as a regex (no forced anchors)
+ *    and test case-insensitively against the model name.
+ * 3. If `search` is an invalid regex → returns false.
+ */
+export function matchesSearchPattern(model: string, search: string): boolean {
+  if (!search) return true;
+
+  if (!REGEX_SPECIAL_CHARS_RE.test(search)) {
+    return model.toLowerCase().includes(search.toLowerCase());
+  }
+
+  try {
+    return new RegExp(search, 'i').test(model);
+  } catch {
+    return false;
+  }
+}

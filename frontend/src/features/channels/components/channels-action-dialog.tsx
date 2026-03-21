@@ -59,7 +59,7 @@ import { CopilotDeviceFlow } from './copilot-device-flow';
 import { ProxyType } from './channels-proxy-dialog';
 import { useProxyPresets, useSaveProxyPreset } from '@/features/system/data/system';
 import { mergeChannelSettingsForUpdate } from '../utils/merge';
-import { matchesModelPattern } from '../utils/pattern';
+import { matchesModelPattern, matchesSearchPattern, isRegexSearch, isInvalidRegexSearch } from '../utils/pattern';
 
 interface Props {
   currentRow?: Channel;
@@ -1154,8 +1154,7 @@ export function ChannelsActionDialog({ currentRow, duplicateFromRow, open, onOpe
       models = models.filter((model) => matchesModelPattern(model, watchedAutoSyncPattern));
     }
     if (debouncedFetchedModelsSearch.trim()) {
-      const search = debouncedFetchedModelsSearch.toLowerCase();
-      models = models.filter((model) => model.toLowerCase().includes(search));
+      models = models.filter((model) => matchesSearchPattern(model, debouncedFetchedModelsSearch.trim()));
     }
     return models;
   }, [fetchedModels, debouncedFetchedModelsSearch, showNotAddedModelsOnly, supportedModels, applyPatternFilter, watchedAutoSyncPattern, patternError]);
@@ -1282,8 +1281,7 @@ export function ChannelsActionDialog({ currentRow, duplicateFromRow, open, onOpe
     if (!debouncedSupportedModelsSearch.trim()) {
       return supportedModels;
     }
-    const search = debouncedSupportedModelsSearch.toLowerCase();
-    return supportedModels.filter((model) => model.toLowerCase().includes(search));
+    return supportedModels.filter((model) => matchesSearchPattern(model, debouncedSupportedModelsSearch.trim()));
   }, [supportedModels, debouncedSupportedModelsSearch]);
 
   // Virtual scrolling for fetched models
@@ -2240,15 +2238,24 @@ export function ChannelsActionDialog({ currentRow, duplicateFromRow, open, onOpe
                 </div>
 
                 {/* Search */}
-                <div className='relative mb-3'>
+                <div className='relative mb-1'>
                   <Search className='text-muted-foreground absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2' />
                   <Input
                     placeholder={t('channels.dialogs.fields.supportedModels.searchPlaceholder')}
                     value={fetchedModelsSearch}
                     onChange={(e) => setFetchedModelsSearch(e.target.value)}
-                    className='h-8 pl-8 text-sm'
+                    className={`h-8 pl-8 pr-14 font-mono text-sm ${isInvalidRegexSearch(fetchedModelsSearch) ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                   />
+                  {isRegexSearch(fetchedModelsSearch) && (
+                    <span className={`absolute top-1/2 right-2 -translate-y-1/2 rounded px-1 py-0.5 font-mono text-[10px] font-semibold ${isInvalidRegexSearch(fetchedModelsSearch) ? 'bg-destructive/15 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                      {t('channels.dialogs.fields.supportedModels.regexMode')}
+                    </span>
+                  )}
                 </div>
+                {isInvalidRegexSearch(fetchedModelsSearch) && (
+                  <p className='text-destructive mb-2 text-xs'>{t('channels.dialogs.fields.autoSyncModelPattern.invalid')}</p>
+                )}
+                {!isInvalidRegexSearch(fetchedModelsSearch) && <div className='mb-2' />}
 
                 {/* Filter and Actions */}
                 <div className='mb-3 flex items-center justify-between gap-2'>
@@ -2557,15 +2564,24 @@ export function ChannelsActionDialog({ currentRow, duplicateFromRow, open, onOpe
                 </div>
 
                 {/* Search */}
-                <div className='relative mb-3'>
+                <div className='relative mb-1'>
                   <Search className='text-muted-foreground absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2' />
                   <Input
                     placeholder={t('channels.dialogs.fields.supportedModels.searchPlaceholder')}
                     value={supportedModelsSearch}
                     onChange={(e) => setSupportedModelsSearch(e.target.value)}
-                    className='h-8 pl-8 text-sm'
+                    className={`h-8 pl-8 pr-14 font-mono text-sm ${isInvalidRegexSearch(supportedModelsSearch) ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                   />
+                  {isRegexSearch(supportedModelsSearch) && (
+                    <span className={`absolute top-1/2 right-2 -translate-y-1/2 rounded px-1 py-0.5 font-mono text-[10px] font-semibold ${isInvalidRegexSearch(supportedModelsSearch) ? 'bg-destructive/15 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                      {t('channels.dialogs.fields.supportedModels.regexMode')}
+                    </span>
+                  )}
                 </div>
+                {isInvalidRegexSearch(supportedModelsSearch) && (
+                  <p className='text-destructive mb-2 text-xs'>{t('channels.dialogs.fields.autoSyncModelPattern.invalid')}</p>
+                )}
+                {!isInvalidRegexSearch(supportedModelsSearch) && <div className='mb-2' />}
 
                 {/* Model List */}
                 <div ref={supportedModelsParentRef} className='min-h-0 flex-1 overflow-auto pr-3'>

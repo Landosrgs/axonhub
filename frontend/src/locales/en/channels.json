@@ -358,6 +358,7 @@
   "channels.dialogs.fields.supportedModels.searchPlaceholder": "Search models...",
   "channels.dialogs.fields.supportedModels.showNotAddedOnly": "Show not added only",
   "channels.dialogs.fields.supportedModels.filterByPattern": "Filter by sync pattern",
+  "channels.dialogs.fields.supportedModels.regexMode": "regex",
   "channels.dialogs.fields.supportedModels.added": "Added",
   "channels.dialogs.fields.supportedModels.allModels": "All Models ({{count}})",
   "channels.dialogs.fields.supportedModels.allModelsWithManual": "{{autoCount}} auto + {{manualCount}} manual models",
